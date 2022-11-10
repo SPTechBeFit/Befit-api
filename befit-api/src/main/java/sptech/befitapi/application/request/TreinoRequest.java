@@ -13,10 +13,11 @@ public class TreinoRequest {
     private Integer criadorId;
     private List<SerieRequest> series;
 
-    public Treino toTreinoRepository() {
+    public Treino toTreinoRepository(String imagem) {
         return new Treino(
                 nome,
                 descricao,
+                imagem,
                 new Usuario(criadorId)
         );
     }

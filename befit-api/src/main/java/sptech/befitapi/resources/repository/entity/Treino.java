@@ -21,16 +21,21 @@ public class Treino {
     @ManyToOne
     private Usuario criador;
 
-    public Treino(Integer id, String nome, String descricao, Usuario criador) {
+    public Treino(Integer id, String nome, String descricao, String imagem, Usuario criador) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
+        this.imagem = imagem;
         this.criador = criador;
     }
 
-    public Treino(String nome, String descricao, Usuario criador) {
+    public Treino() {
+    }
+
+    public Treino(String nome, String descricao, String imagem, Usuario criador) {
         this.nome = nome;
         this.descricao = descricao;
+        this.imagem = imagem;
         this.criador = criador;
     }
 

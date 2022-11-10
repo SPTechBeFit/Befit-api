@@ -7,6 +7,9 @@ import sptech.befitapi.resources.repository.SerieRepository;
 import sptech.befitapi.resources.repository.TreinoRepository;
 import sptech.befitapi.resources.repository.entity.Treino;
 
+import java.util.List;
+import java.util.Objects;
+
 @Service
 public class TreinoService {
 
@@ -14,10 +17,15 @@ public class TreinoService {
     private TreinoRepository treinoRepository;
 
     @Autowired
+    private ImagensPexelService imagensPexelService;
+
+    @Autowired
     private SerieRepository serieRepository;
 
     public Treino save(TreinoRequest treino) {
-        Treino treinoDB = treinoRepository.save(treino.toTreinoRepository());
+        String imagem = Objects.requireNonNull(imagensPexelService.getImagemPexel("academia " + treino.getNome()).getBody()).getPhotos().get(0).getSrc().getMedium();
+
+        Treino treinoDB = treinoRepository.save(treino.toTreinoRepository(imagem));
 
         System.out.println(treino.getSeries());
 
@@ -26,5 +34,9 @@ public class TreinoService {
         );
 
         return treinoDB;
+    }
+
+    public List<Treino> getAll() {
+        return treinoRepository.findAll();
     }
 }
