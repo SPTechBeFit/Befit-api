@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sptech.befitapi.application.request.TreinoRequest;
+import sptech.befitapi.application.response.TreinoDetalhado;
 import sptech.befitapi.application.response.TreinoFavoritoResponse;
 import sptech.befitapi.application.service.TreinoService;
 import sptech.befitapi.resources.repository.entity.Treino;
@@ -34,7 +35,7 @@ public class TreinoController {
     @GetMapping("/favoritos/{id}")
     public ResponseEntity<List<TreinoFavoritoResponse>> getFavorito(@PathVariable int id) {
         List<TreinoFavoritoResponse> treinos = treinoService.getFavoritos(id);
-        return (!treinos.isEmpty()) ? ResponseEntity.status(HttpStatus.OK).body(treinos) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return (treinos != null) ? ResponseEntity.status(HttpStatus.OK).body(treinos) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/favoritar/{usuarioId}/{treinoId}")
@@ -42,6 +43,13 @@ public class TreinoController {
         Boolean favoritado = treinoService.favoritar(usuarioId, treinoId);
 
         return (favoritado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino favoritado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível favoitar o treino");
+
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<List<TreinoDetalhado>> getTreinoDetalhado(@PathVariable int id) {
+        List<TreinoDetalhado> treinoDetalhado = treinoService.getTreinoDetalhado(id);
+        return (treinoDetalhado != null) ? ResponseEntity.status(HttpStatus.OK).body(treinoDetalhado) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
 }

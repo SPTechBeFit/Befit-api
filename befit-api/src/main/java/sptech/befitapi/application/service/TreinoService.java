@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.application.request.TreinoRequest;
+import sptech.befitapi.application.response.TreinoDetalhado;
 import sptech.befitapi.application.response.TreinoFavoritoResponse;
 import sptech.befitapi.resources.repository.SerieRepository;
 import sptech.befitapi.resources.repository.TreinoFavoritoRepository;
 import sptech.befitapi.resources.repository.TreinoRepository;
 import sptech.befitapi.resources.repository.UsuarioRepository;
+import sptech.befitapi.resources.repository.entity.Serie;
 import sptech.befitapi.resources.repository.entity.Treino;
 import sptech.befitapi.resources.repository.entity.TreinoFavorito;
 import sptech.befitapi.resources.repository.entity.Usuario;
@@ -68,6 +70,9 @@ public class TreinoService {
         }
 
         List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(id);
+        if (treinos == null || treinos.isEmpty()) {
+            return null;
+        }
         return new TreinoFavoritoResponse().fromTreinoFavoritoRepository(treinos);
     }
 
@@ -78,7 +83,13 @@ public class TreinoService {
         } catch (Exception e) {
             return false;
         }
+    }
 
-
+    public List<TreinoDetalhado> getTreinoDetalhado(int id) {
+        List<Serie> series = serieRepository.findByTreinoId(id);
+        if (series == null || series.isEmpty()) {
+            return null;
+        }
+        return new TreinoDetalhado().fromSerieRepository(series);
     }
 }

@@ -20,11 +20,11 @@ public class Serie {
     @ManyToOne
     private Exercicio exercicio;
 
-    private Integer quantidade;
+    private Integer quantidade = 0;
 
-    private LocalTime tempo;
+    private LocalTime tempo = LocalTime.of(0,0,0);
 
-    private Integer repeticao;
+    private Integer repeticao = 0;
 
     public Serie(Treino treino, Exercicio exercicio, Integer quantidade, LocalTime tempo, Integer repeticao) {
         this.treino = treino;
