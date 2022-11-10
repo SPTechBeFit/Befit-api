@@ -7,6 +7,7 @@ import sptech.befitapi.application.domain.pexel.Pexels;
 import sptech.befitapi.application.service.ImagensPexelService;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("imagem")
 @Slf4j
 public class ImagemPexelsController {

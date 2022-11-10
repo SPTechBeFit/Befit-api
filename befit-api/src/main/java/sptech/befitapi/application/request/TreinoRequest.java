@@ -4,6 +4,7 @@ import lombok.Data;
 import sptech.befitapi.resources.repository.entity.Treino;
 import sptech.befitapi.resources.repository.entity.Usuario;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data

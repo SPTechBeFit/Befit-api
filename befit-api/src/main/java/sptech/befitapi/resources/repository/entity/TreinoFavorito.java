@@ -19,4 +19,18 @@ public class TreinoFavorito {
 
     @ManyToOne
     private Treino treino;
+
+    public TreinoFavorito() {
+    }
+
+    public TreinoFavorito(Integer id, Usuario usuario, Treino treino) {
+        this.id = id;
+        this.usuario = usuario;
+        this.treino = treino;
+    }
+
+    public TreinoFavorito(Usuario usuario, Treino treino) {
+        this.usuario = usuario;
+        this.treino = treino;
+    }
 }

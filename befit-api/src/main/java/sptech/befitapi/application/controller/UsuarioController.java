@@ -10,6 +10,7 @@ import sptech.befitapi.resources.repository.entity.Usuario;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
