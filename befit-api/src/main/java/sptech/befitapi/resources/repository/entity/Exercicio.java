@@ -31,4 +31,7 @@ public class Exercicio {
     public Exercicio(Integer id) {
         this.id = id;
     }
+
+    public Exercicio() {
+    }
 }

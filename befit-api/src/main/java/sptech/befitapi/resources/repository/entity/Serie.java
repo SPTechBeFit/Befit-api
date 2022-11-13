@@ -33,4 +33,7 @@ public class Serie {
         this.tempo = tempo;
         this.repeticao = repeticao;
     }
+
+    public Serie() {
+    }
 }

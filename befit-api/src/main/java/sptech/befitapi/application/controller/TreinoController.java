@@ -46,7 +46,7 @@ public class TreinoController {
 
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<List<TreinoDetalhado>> getTreinoDetalhado(@PathVariable int id) {
         List<TreinoDetalhado> treinoDetalhado = treinoService.getTreinoDetalhado(id);
         return (treinoDetalhado != null) ? ResponseEntity.status(HttpStatus.OK).body(treinoDetalhado) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
