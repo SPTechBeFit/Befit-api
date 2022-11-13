@@ -72,8 +72,8 @@ public class TreinoService {
             return null;
         }
 
-        List<Serie> series = serieRepository.findByTreinoId(usuario.getId());
-        if (series == null || treinos.isEmpty()) {
+        List<TreinoFavorito> treinoByUsuarioId = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
+        if (treinoByUsuarioId == null || treinoByUsuarioId.isEmpty()) {
             return null;
         }
 
@@ -82,17 +82,8 @@ public class TreinoService {
 
         for (Treino t : treinos) {
             boolean achou = false;
-            for (Serie s : series) {
-                if (t.getId().equals(s.getTreino().getId())) {
-                    if (!catalogo.contains(new CatalogoTreinoResponse(
-                            t.getId(),
-                            t.getNome(),
-                            t.getDescricao(),
-                            t.getImagem(),
-                            true
-                    ))) {
-
-
+            for (TreinoFavorito tf : treinoByUsuarioId) {
+                if (t.getId().equals(tf.getTreino().getId())) {
                         catalogo.add(new CatalogoTreinoResponse(
                                 t.getId(),
                                 t.getNome(),
@@ -100,7 +91,6 @@ public class TreinoService {
                                 t.getImagem(),
                                 true
                         ));
-                    }
                     achou = true;
                 }
             }
