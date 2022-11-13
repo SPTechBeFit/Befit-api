@@ -13,11 +13,14 @@ public class TreinoFavoritoResponse {
     private String descricao;
     private String imagem;
 
-    public TreinoFavoritoResponse(Integer id, String nome, String descricao, String imagem) {
+    private Boolean favoritado;
+
+    public TreinoFavoritoResponse(Integer id, String nome, String descricao, String imagem, Boolean favoritado) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.imagem = imagem;
+        this.favoritado = favoritado;
     }
 
     public TreinoFavoritoResponse() {
@@ -30,7 +33,8 @@ public class TreinoFavoritoResponse {
                     t.getTreino().getId(),
                     t.getTreino().getNome(),
                     t.getTreino().getDescricao(),
-                    t.getTreino().getImagem()
+                    t.getTreino().getImagem(),
+                    true
                 )
             );
         }
