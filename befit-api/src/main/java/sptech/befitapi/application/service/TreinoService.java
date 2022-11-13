@@ -140,6 +140,28 @@ public class TreinoService {
         }
     }
 
+    public Boolean deleteFavorito(String personId, int treinoId) {
+        Usuario usuario = usuarioRepository.findByPersonId(personId);
+
+        if (usuario == null) {
+            return false;
+        }
+
+        List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
+        if (treinos == null || treinos.isEmpty()) {
+            return false;
+        }
+
+        try {
+            treinoFavoritoRepository.deleteByUsuarioIdAndTreinoId(usuario.getId(), treinoId);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
     public List<TreinoDetalhado> getTreinoDetalhado(int id) {
         List<Serie> series = serieRepository.findByTreinoId(id);
         if (series == null || series.isEmpty()) {

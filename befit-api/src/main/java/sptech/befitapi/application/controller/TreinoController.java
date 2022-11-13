@@ -46,6 +46,14 @@ public class TreinoController {
 
     }
 
+    @DeleteMapping("/desfavoritar/{personId}/{treinoId}")
+    public ResponseEntity<String> deleteFavorito(@PathVariable String personId, @PathVariable int treinoId) {
+        Boolean apagado = treinoService.deleteFavorito(personId, treinoId);
+
+        return (apagado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino deletado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível deletar o treino");
+
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<List<TreinoDetalhado>> getTreinoDetalhado(@PathVariable int id) {
         List<TreinoDetalhado> treinoDetalhado = treinoService.getTreinoDetalhado(id);
