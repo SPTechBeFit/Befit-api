@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sptech.befitapi.application.request.TreinoRequest;
+import sptech.befitapi.application.response.CatalogoTreinoResponse;
 import sptech.befitapi.application.response.TreinoDetalhado;
 import sptech.befitapi.application.response.TreinoFavoritoResponse;
 import sptech.befitapi.application.service.TreinoService;
 import sptech.befitapi.resources.repository.entity.Treino;
-import sptech.befitapi.resources.repository.entity.TreinoFavorito;
 
 import java.util.List;
 
@@ -26,21 +26,21 @@ public class TreinoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(treinoService.save(treino));
     }
 
-    @GetMapping
-    public ResponseEntity<List<Treino>> getCatalogo() {
-        List<Treino> treinos = treinoService.getAll();
-        return (!treinos.isEmpty()) ? ResponseEntity.status(HttpStatus.OK).body(treinos) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    @GetMapping("/catalogo/{personId}")
+    public ResponseEntity<List<CatalogoTreinoResponse>> getCatalogo(@PathVariable String personId) {
+        List<CatalogoTreinoResponse> catalago = treinoService.getCatalogo(personId);
+        return (catalago != null) ? ResponseEntity.status(HttpStatus.OK).body(catalago) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/favoritos/{id}")
-    public ResponseEntity<List<TreinoFavoritoResponse>> getFavorito(@PathVariable int id) {
-        List<TreinoFavoritoResponse> treinos = treinoService.getFavoritos(id);
+    @GetMapping("/favoritos/{personId}")
+    public ResponseEntity<List<TreinoFavoritoResponse>> getFavorito(@PathVariable String personId) {
+        List<TreinoFavoritoResponse> treinos = treinoService.getFavoritos(personId);
         return (treinos != null) ? ResponseEntity.status(HttpStatus.OK).body(treinos) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping("/favoritar/{usuarioId}/{treinoId}")
-    public ResponseEntity<String> postFavoritar(@PathVariable int usuarioId, @PathVariable int treinoId) {
-        Boolean favoritado = treinoService.favoritar(usuarioId, treinoId);
+    @PostMapping("/favoritar/{personId}/{treinoId}")
+    public ResponseEntity<String> postFavoritar(@PathVariable String personId, @PathVariable int treinoId) {
+        Boolean favoritado = treinoService.favoritar(personId, treinoId);
 
         return (favoritado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino favoritado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível favoitar o treino");
 

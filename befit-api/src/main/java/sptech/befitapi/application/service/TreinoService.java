@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.application.request.TreinoRequest;
+import sptech.befitapi.application.response.CatalogoTreinoResponse;
 import sptech.befitapi.application.response.TreinoDetalhado;
 import sptech.befitapi.application.response.TreinoFavoritoResponse;
 import sptech.befitapi.resources.repository.SerieRepository;
@@ -16,6 +17,7 @@ import sptech.befitapi.resources.repository.entity.Treino;
 import sptech.befitapi.resources.repository.entity.TreinoFavorito;
 import sptech.befitapi.resources.repository.entity.Usuario;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +40,7 @@ public class TreinoService {
     private TreinoFavoritoRepository treinoFavoritoRepository;
 
     public Treino save(TreinoRequest treino) {
-        if(!usuarioRepository.existsById(treino.getCriadorId())) {
+        if (!usuarioRepository.existsById(treino.getCriadorId())) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
             );
@@ -57,28 +59,91 @@ public class TreinoService {
         return treinoDB;
     }
 
-    public List<Treino> getAll() {
-        return treinoRepository.findAll();
+    public List<CatalogoTreinoResponse> getCatalogo(String personId) {
+        List<Treino> treinos = treinoRepository.findAll();
+
+        if (treinos == null || treinos.isEmpty()) {
+            return null;
+        }
+
+        Usuario usuario = usuarioRepository.findByPersonId(personId);
+
+        if (usuario == null) {
+            return null;
+        }
+
+        List<Serie> series = serieRepository.findByTreinoId(usuario.getId());
+        if (series == null || treinos.isEmpty()) {
+            return null;
+        }
+
+        List<CatalogoTreinoResponse> catalogo = new ArrayList<>();
+
+
+        for (Treino t : treinos) {
+            boolean achou = false;
+            for (Serie s : series) {
+                if (t.getId().equals(s.getTreino().getId())) {
+                    if (!catalogo.contains(new CatalogoTreinoResponse(
+                            t.getId(),
+                            t.getNome(),
+                            t.getDescricao(),
+                            t.getImagem(),
+                            true
+                    ))) {
+
+
+                        catalogo.add(new CatalogoTreinoResponse(
+                                t.getId(),
+                                t.getNome(),
+                                t.getDescricao(),
+                                t.getImagem(),
+                                true
+                        ));
+                    }
+                    achou = true;
+                }
+            }
+            if (!achou) {
+                catalogo.add(new CatalogoTreinoResponse(
+                        t.getId(),
+                        t.getNome(),
+                        t.getDescricao(),
+                        t.getImagem(),
+                        false
+                ));
+            }
+
+        }
+        return catalogo;
     }
 
-    public List<TreinoFavoritoResponse> getFavoritos(int id) {
+    public List<TreinoFavoritoResponse> getFavoritos(String personId) {
 
-        if(!usuarioRepository.existsById(id)) {
+        Usuario usuario = usuarioRepository.findByPersonId(personId);
+
+        if (usuario == null) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
             );
         }
 
-        List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(id);
+        List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
         if (treinos == null || treinos.isEmpty()) {
             return null;
         }
         return new TreinoFavoritoResponse().fromTreinoFavoritoRepository(treinos);
     }
 
-    public Boolean favoritar(int usuarioId, int treinoId) {
-        try{
-            treinoFavoritoRepository.save(new TreinoFavorito(new Usuario(usuarioId), new Treino(treinoId)));
+    public Boolean favoritar(String personId, int treinoId) {
+        Usuario usuario = usuarioRepository.findByPersonId(personId);
+
+        if (usuario == null) {
+            return false;
+        }
+
+        try {
+            treinoFavoritoRepository.save(new TreinoFavorito(new Usuario(usuario.getId()), new Treino(treinoId)));
             return true;
         } catch (Exception e) {
             return false;
