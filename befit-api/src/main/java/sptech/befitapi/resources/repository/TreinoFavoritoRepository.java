@@ -2,6 +2,8 @@ package sptech.befitapi.resources.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import sptech.befitapi.resources.repository.entity.TreinoFavorito;
@@ -13,7 +15,8 @@ public interface TreinoFavoritoRepository extends JpaRepository<TreinoFavorito, 
 
     List<TreinoFavorito> findTreinoByUsuarioId(int id);
 
+    TreinoFavorito findTreinoFavoritoByUsuarioIdAndTreinoId(int usuarioId, int treinoId);
     @Transactional
     @Modifying
-    void deleteByUsuarioIdAndTreinoId(int usuarioId, int treinoId);
+    void deleteTreinoFavoritoById(int treinoFavoitoId);
 }

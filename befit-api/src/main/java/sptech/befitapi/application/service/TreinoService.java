@@ -72,14 +72,10 @@ public class TreinoService {
             return null;
         }
 
-        List<TreinoFavorito> treinoByUsuarioId = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
-        if (treinoByUsuarioId == null || treinoByUsuarioId.isEmpty()) {
-            return null;
-        }
-
         List<CatalogoTreinoResponse> catalogo = new ArrayList<>();
 
-
+        List<TreinoFavorito> treinoByUsuarioId = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
+        
         for (Treino t : treinos) {
             boolean achou = false;
             for (TreinoFavorito tf : treinoByUsuarioId) {
@@ -147,13 +143,15 @@ public class TreinoService {
             return false;
         }
 
-        List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
-        if (treinos == null || treinos.isEmpty()) {
+        TreinoFavorito treinoFavorito = treinoFavoritoRepository.findTreinoFavoritoByUsuarioIdAndTreinoId(usuario.getId(), treinoId);
+        if (treinoFavorito == null) {
             return false;
         }
 
+
+
         try {
-            treinoFavoritoRepository.deleteByUsuarioIdAndTreinoId(usuario.getId(), treinoId);
+            treinoFavoritoRepository.deleteTreinoFavoritoById(treinoFavorito.getId());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
