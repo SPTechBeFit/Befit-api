@@ -43,15 +43,13 @@ public class TreinoController {
         Boolean favoritado = treinoService.favoritar(personId, treinoId);
 
         return (favoritado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino favoritado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível favoitar o treino");
-
     }
 
     @DeleteMapping("/desfavoritar/{personId}/{treinoId}")
     public ResponseEntity<String> deleteFavorito(@PathVariable String personId, @PathVariable int treinoId) {
         Boolean apagado = treinoService.deleteFavorito(personId, treinoId);
 
-        return (apagado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino deletado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível deletar o treino");
-
+        return (apagado) ? ResponseEntity.status(HttpStatus.CREATED).body("Treino desfavoritado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível desfavoritar o treino");
     }
 
     @GetMapping("/{id}")

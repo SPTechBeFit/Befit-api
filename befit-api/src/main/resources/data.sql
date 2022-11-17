@@ -7,9 +7,9 @@ INSERT INTO ingrediente (nome, porcao, proteina, lipidio, carboidrato, sodio, ca
                                                                                            ('frango', 100, 26.00, 2.5, 0.3, 0.08, 239.00),
                                                                                            ('batata doce', 100, 0.60, 0.03, 18.40, 0.03, 77.00);
 
-INSERT INTO dieta (nome, descricao, criador_id) VALUES
-                                                    ('dieta monstra', 'dieta que frango nao come', 1),
-                                                    ('dieta de frango', 'dieta pra magrinho', 1);
+INSERT INTO dieta (nome, descricao, imagem, criador_id) VALUES
+                                                    ('dieta monstra', 'dieta que frango nao come', 'https://img.itdg.com.br/tdg/images/recipes/000/000/897/344249/344249_original.jpg?mode=crop&width=710&height=400', 1),
+                                                    ('dieta de frango', 'dieta pra magrinho', 'https://www.kitano.com.br/wp-content/uploads/2019/07/SSP_2414-Frango-assado-com-alecrim-e-louro-1.jpg', 1);
 
 INSERT INTO ingredientes_dieta (dieta_id, ingrediente_id, quantidade) VALUES
                                    (1, 1, 2.0),

@@ -69,7 +69,9 @@ public class TreinoService {
         Usuario usuario = usuarioRepository.findByPersonId(personId);
 
         if (usuario == null) {
-            return null;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
+            );
         }
 
         List<CatalogoTreinoResponse> catalogo = new ArrayList<>();

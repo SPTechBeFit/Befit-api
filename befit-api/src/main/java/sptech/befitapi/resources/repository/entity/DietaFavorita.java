@@ -18,4 +18,18 @@ public class DietaFavorita {
 
     @ManyToOne
     private Dieta dieta;
+
+    public DietaFavorita(Usuario usuario, Dieta dieta) {
+        this.usuario = usuario;
+        this.dieta = dieta;
+    }
+
+    public DietaFavorita(Integer id, Usuario usuario, Dieta dieta) {
+        this.id = id;
+        this.usuario = usuario;
+        this.dieta = dieta;
+    }
+
+    public DietaFavorita() {
+    }
 }
