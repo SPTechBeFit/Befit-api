@@ -12,6 +12,7 @@ import sptech.befitapi.resources.repository.entity.Treino;
 import sptech.befitapi.resources.repository.entity.TreinoFavorito;
 import sptech.befitapi.resources.repository.entity.Usuario;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,5 +46,9 @@ public class ExercicioService {
             return false;
         }
 
+    }
+
+    public List<Exercicio> getAll() {
+        return exercicioRepository.findAll();
     }
 }

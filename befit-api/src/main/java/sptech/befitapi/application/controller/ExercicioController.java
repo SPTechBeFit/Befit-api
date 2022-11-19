@@ -9,6 +9,8 @@ import sptech.befitapi.application.request.ExercicioRequest;
 import sptech.befitapi.application.service.ExercicioService;
 import sptech.befitapi.resources.repository.entity.Exercicio;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/exercicios")
@@ -29,5 +31,10 @@ public class ExercicioController {
 
         return (atualizado) ? ResponseEntity.status(HttpStatus.OK).body("Exercicio atualizado com sucesso") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível atualizar o exercicio");
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Exercicio>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(exercicioService.getAll());
     }
 }
