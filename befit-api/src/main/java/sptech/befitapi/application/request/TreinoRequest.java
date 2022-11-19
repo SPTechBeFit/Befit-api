@@ -11,10 +11,10 @@ import java.util.List;
 public class TreinoRequest {
     private String nome;
     private String descricao;
-    private Integer criadorId;
+    private String personId;
     private List<SerieRequest> series;
 
-    public Treino toTreinoRepository(String imagem) {
+    public Treino toTreinoRepository(String imagem, Integer criadorId) {
         return new Treino(
                 nome,
                 descricao,

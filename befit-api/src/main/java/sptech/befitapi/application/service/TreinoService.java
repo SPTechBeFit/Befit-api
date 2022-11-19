@@ -40,7 +40,9 @@ public class TreinoService {
     private TreinoFavoritoRepository treinoFavoritoRepository;
 
     public Treino save(TreinoRequest treino) {
-        if (!usuarioRepository.existsById(treino.getCriadorId())) {
+        Usuario usuario = usuarioRepository.findByPersonId(treino.getPersonId());
+
+        if (usuario == null) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
             );
@@ -48,7 +50,7 @@ public class TreinoService {
 
         String imagem = Objects.requireNonNull(imagensPexelService.getImagemPexel("academia " + treino.getNome()).getBody()).getPhotos().get(0).getSrc().getMedium();
 
-        Treino treinoDB = treinoRepository.save(treino.toTreinoRepository(imagem));
+        Treino treinoDB = treinoRepository.save(treino.toTreinoRepository(imagem, usuario.getId()));
 
         System.out.println(treino.getSeries());
 
