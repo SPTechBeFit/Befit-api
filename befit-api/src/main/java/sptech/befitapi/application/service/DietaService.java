@@ -100,7 +100,7 @@ public class DietaService {
 
     public Optional<DietaCompleta> getById(int id) {
         List<IngredientesDieta> ingredientesDietas = ingredientesDietaRepository.findIngredientesDietaByDietaId(id);
-        Optional<Dieta> dieta = dietaRepository.findById(id);
+        var response = dietaRepository.findById(id);
 
         for (IngredientesDieta i : ingredientesDietas) {
             i.getIngrediente().setPorcao((int) (i.getIngrediente().getPorcao() * i.getQuantidade()));
@@ -111,7 +111,7 @@ public class DietaService {
             i.getIngrediente().setCaloria(i.getIngrediente().getCaloria() * i.getQuantidade());
         }
 
-        return Optional.of(new DietaCompleta(dieta, ingredientesDietas));
+        return Optional.of(new DietaCompleta(response, ingredientesDietas));
     }
 
     public Boolean favoritar(String personId, int dietaId) {

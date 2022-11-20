@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sptech.befitapi.application.listaObj.ListaObj;
 import sptech.befitapi.application.service.IngredienteService;
 import sptech.befitapi.resources.repository.entity.Ingrediente;
 

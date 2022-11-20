@@ -11,6 +11,7 @@ import java.util.List;
 public class TreinoDetalhado {
     private int idExercicio;
     private String nome;
+    private String nomeExercicio;
     private String descricao;
     private String imagem;
     private Integer quantidade;

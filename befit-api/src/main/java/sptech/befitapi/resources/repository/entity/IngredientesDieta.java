@@ -20,4 +20,12 @@ public class IngredientesDieta {
 
     private Double quantidade;
 
+    public IngredientesDieta(Dieta dieta, Ingrediente ingrediente, Double quantidade) {
+        this.dieta = dieta;
+        this.ingrediente = ingrediente;
+        this.quantidade = quantidade;
+    }
+
+    public IngredientesDieta() {
+    }
 }

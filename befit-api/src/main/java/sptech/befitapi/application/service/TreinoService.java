@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import sptech.befitapi.application.Util.PilhaObj;
 import sptech.befitapi.application.request.TreinoRequest;
 import sptech.befitapi.application.response.CatalogoTreinoResponse;
 import sptech.befitapi.application.response.TreinoDetalhado;
@@ -39,6 +40,10 @@ public class TreinoService {
     @Autowired
     private TreinoFavoritoRepository treinoFavoritoRepository;
 
+    private PilhaObj<Treino> pilhaTreino = new PilhaObj(10);
+    private PilhaObj<Serie> pilhaSerie = new PilhaObj(10);
+    private List<Serie> listSerie = new ArrayList();
+
     public Treino save(TreinoRequest treino) {
         Usuario usuario = usuarioRepository.findByPersonId(treino.getPersonId());
 
@@ -54,12 +59,14 @@ public class TreinoService {
 
         System.out.println(treino.getSeries());
 
-        treino.getSeries().forEach(
+       treino.getSeries().forEach(
                 serie -> serieRepository.save(serie.toSerieRepository(treinoDB.getId()))
         );
 
+
         return treinoDB;
     }
+
 
     public List<CatalogoTreinoResponse> getCatalogo(String personId) {
         List<Treino> treinos = treinoRepository.findAll();
@@ -164,11 +171,33 @@ public class TreinoService {
 
     }
 
-    public List<TreinoDetalhado> getTreinoDetalhado(int id) {
+    public List<TreinoDetalhado> getTreinoDetalhado(Integer id) {
         List<Serie> series = serieRepository.findByTreinoId(id);
         if (series == null || series.isEmpty()) {
             return null;
         }
+        var response = treinoRepository.findById(id);
         return new TreinoDetalhado().fromSerieRepository(series);
+    }
+
+    public void listaParaDesfazer(Treino treino){
+        listSerie = serieRepository.findByTreinoId(treino.getId());
+        pilhaTreino.push(treino);
+    }
+
+    public Boolean desfazer(){
+      boolean desfeito = false;
+        if (pilhaTreino.isEmpty() && pilhaSerie.isEmpty()){
+            throw new IllegalStateException();
+        }else {
+            for (Serie value : listSerie) {
+                pilhaSerie.push(value);
+                Serie serie = pilhaSerie.pop();
+                serieRepository.delete(serie);
+            }
+                Treino treino = pilhaTreino.pop();
+                treinoRepository.delete(treino);
+                return !desfeito;
+        }
     }
 }

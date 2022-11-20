@@ -19,4 +19,17 @@ public class Ingrediente {
     private Double carboidrato;
     private Double sodio;
     private Double caloria;
+
+    public Ingrediente(String nome, Integer porcao, Double proteina, Double lipidio, Double carboidrato, Double sodio, Double caloria) {
+        this.nome = nome;
+        this.porcao = porcao;
+        this.proteina = proteina;
+        this.lipidio = lipidio;
+        this.carboidrato = carboidrato;
+        this.sodio = sodio;
+        this.caloria = caloria;
+    }
+
+    public Ingrediente() {
+    }
 }

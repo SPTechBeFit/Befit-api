@@ -13,6 +13,13 @@ public class SerieRequest {
     private Integer repeticao = 0;
     private LocalTime tempo = LocalTime.of(0,0,0);
 
+    public SerieRequest(Integer exercicioId, Integer quantidade, Integer repeticao, LocalTime tempo) {
+        this.exercicioId = exercicioId;
+        this.quantidade = quantidade;
+        this.repeticao = repeticao;
+        this.tempo = tempo;
+    }
+
     public Serie toSerieRepository(Integer treinoId) {
         return new Serie(
                 new Treino(treinoId),
