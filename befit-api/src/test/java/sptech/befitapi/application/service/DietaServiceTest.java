@@ -5,9 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.application.request.DietaRequest;
 import sptech.befitapi.resources.repository.DietaRepository;
 import sptech.befitapi.resources.repository.IngredientesDietaRepository;
@@ -21,7 +21,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,13 +40,13 @@ class DietaServiceTest {
 
     @Test
     void cadastrar_deveCadastrarDietaCorretamente() {
-        given(usuarioRepository.findByPersonId(anyString())).willReturn(new Usuario(
+        when(usuarioRepository.findByPersonId(anyString())).thenReturn(new Usuario(
                 1, "nomeTest", "email@test.com", "senhaTest", "d126b367-253b-47f3-84e2-601bbd90e839", 0, false
         ));
 
-        given(dietaRepository.save(any())).willReturn(new Dieta(1));
+        when(dietaRepository.save(any())).thenReturn(new Dieta(1));
 
-        given(ingredientesDietaRepository.save(any())).willReturn(new IngredientesDieta());
+        when(ingredientesDietaRepository.save(any())).thenReturn(new IngredientesDieta());
 
         Dieta resultado = service.cadastrar(new DietaRequest(
                 new Dieta(1),
@@ -56,6 +55,16 @@ class DietaServiceTest {
                 ));
 
         assertNotNull(resultado);
+    }
+
+    @Test
+    void cadastrar_deveLancarUmaExceptionDeNotFound() {
+        when(usuarioRepository.findByPersonId(anyString())).thenReturn(null);
+        DietaRequest dietaRequest = new DietaRequest();
+        dietaRequest.setPersonId("d126b367-253b-47f3-84e2-601bbd90e839");
+
+        ResponseStatusException result = assertThrows(ResponseStatusException.class, () -> service.cadastrar(dietaRequest));
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatus());
     }
 
 }

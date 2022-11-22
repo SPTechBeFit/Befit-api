@@ -35,9 +35,13 @@ public class DietaService {
     public Dieta cadastrar(@RequestBody DietaRequest dieta) {
         Usuario usuario = usuarioRepository.findByPersonId(dieta.getPersonId());
 
-        if (usuario != null) {
-            dieta.getDieta().setCriador(usuario);
+        if (usuario == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
+            );
         }
+
+        dieta.getDieta().setCriador(usuario);
 
         Dieta dietaDB = dietaRepository.save(dieta.getDieta());
 
