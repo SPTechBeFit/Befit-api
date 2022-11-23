@@ -23,7 +23,9 @@ public class TreinoController {
 
     @PostMapping
     public ResponseEntity<Treino> post(@RequestBody TreinoRequest treino) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(treinoService.save(treino));
+       Treino treinoAretornar = treinoService.save(treino);
+       treinoService.listaParaDesfazer(treinoAretornar);
+        return ResponseEntity.status(HttpStatus.CREATED).body(treinoAretornar);
     }
 
     @GetMapping("/catalogo/{personId}")
@@ -58,4 +60,12 @@ public class TreinoController {
         return (treinoDetalhado != null) ? ResponseEntity.status(HttpStatus.OK).body(treinoDetalhado) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
+
+    @DeleteMapping("/desfazer")
+    public ResponseEntity<String> desfazerTreino() {
+        Boolean ok = treinoService.desfazer();
+        return (ok) ? ResponseEntity.status(HttpStatus.OK).body("O Treino foi deletado") :
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao desfazer as alterações");
+    }
+
 }

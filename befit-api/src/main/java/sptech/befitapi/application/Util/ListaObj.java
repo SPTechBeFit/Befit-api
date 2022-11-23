@@ -1,4 +1,4 @@
-package sptech.befitapi.application.listaObj;
+package sptech.befitapi.application.Util;
 
 import sptech.befitapi.resources.repository.entity.Dieta;
 import sptech.befitapi.resources.repository.entity.Ingrediente;

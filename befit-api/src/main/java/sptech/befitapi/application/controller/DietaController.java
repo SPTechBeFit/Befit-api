@@ -12,6 +12,7 @@ import sptech.befitapi.application.response.TreinoFavoritoResponse;
 import sptech.befitapi.application.service.DietaService;
 import sptech.befitapi.resources.repository.entity.Dieta;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,18 @@ public class DietaController {
     public ResponseEntity<List<DietaFavoritaResponse>> getFavorito(@PathVariable String personId) {
         List<DietaFavoritaResponse> dietas = dietaService.getFavoritos(personId);
         return (dietas != null) ? ResponseEntity.status(HttpStatus.OK).body(dietas) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping(value = "/importar/dieta/{personId}", consumes = "text/*")
+    public ResponseEntity<String> lerArquivoTxt(@PathVariable String personId, @RequestBody byte[] dieta) throws UnsupportedEncodingException {
+        dietaService.agendarExecucao(personId, dieta);
+        return ResponseEntity.ok().body("Arquivo lido / Dieta sera gerada em 10s");
+    }
+
+    @GetMapping(value = "/exportar/dieta/{idDieta}", produces = "text/plain")
+    public ResponseEntity<Object> getArquivtoTxt(@PathVariable int idDieta) {
+        byte[] resultado = dietaService.gravarDietaTxt(idDieta);
+        return ResponseEntity.status(HttpStatus.OK).header("content-disposition", "attachment; filename=\"dieta.txt\"").body(resultado);
     }
 
 }

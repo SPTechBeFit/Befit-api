@@ -28,9 +28,9 @@ INSERT INTO treino (nome, descricao, imagem, criador_id) VALUES
 
 INSERT INTO serie (treino_id, exercicio_id, quantidade, tempo, repeticao) VALUES
                                                                               (1, 1, 15, '00:00:00', 3),
-                                                                              (1, 2, 0, '00:01:00', 3),
+                                                                              (1, 2, 10, '00:01:00', 3),
                                                                               (2, 1, 20, '00:00:00', 3),
-                                                                              (2, 2, 0, '00:02:00', 4);
+                                                                              (2, 2, 10, '00:02:00', 4);
 
 INSERT INTO treino_favorito (usuario_id, treino_id) VALUES
                                                         (1, 1);

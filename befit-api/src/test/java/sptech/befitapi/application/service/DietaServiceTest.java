@@ -18,6 +18,8 @@ import sptech.befitapi.resources.repository.UsuarioRepository;
 import sptech.befitapi.resources.repository.entity.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -138,6 +140,7 @@ class DietaServiceTest {
 
         ingredientesDieta.setQuantidade(2.0);
 
+        when(dietaRepository.findById(anyInt())).thenReturn(Optional.of(new Dieta(1)));
 
         when(ingredientesDietaRepository.findIngredientesDietaByDietaId(anyInt())).thenReturn(List.of(ingredientesDieta));
 
@@ -148,11 +151,22 @@ class DietaServiceTest {
 
     @Test
     void getById_deveLancarUmaExceptionDeNotFoundParaIngredienteVazio() {
+        when(dietaRepository.findById(anyInt())).thenReturn(Optional.of(new Dieta(1)));
+
         when(ingredientesDietaRepository.findIngredientesDietaByDietaId(anyInt())).thenReturn(new ArrayList<>());
 
         ResponseStatusException resultado = assertThrows(ResponseStatusException.class, () -> service.getById(1));
         assertEquals(HttpStatus.NOT_FOUND, resultado.getStatus());
         assertEquals("404 NOT_FOUND \"Não foi possível encontrar os ingredientes da dieta\"", resultado.getMessage());
+    }
+
+    @Test
+    void getById_deveLancarUmaExceptionDeNotFoundParaDietaInvalida() {
+        when(dietaRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        ResponseStatusException resultado = assertThrows(ResponseStatusException.class, () -> service.getById(1));
+        assertEquals(HttpStatus.NOT_FOUND, resultado.getStatus());
+        assertEquals("404 NOT_FOUND \"Não foi possível encontrar a dieta\"", resultado.getMessage());
     }
 
     @Test

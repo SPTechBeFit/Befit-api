@@ -1,11 +1,9 @@
 package sptech.befitapi.application.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.resources.repository.UsuarioRepository;
-import sptech.befitapi.resources.repository.entity.*;
+import sptech.befitapi.resources.repository.entity.Usuario;
 
 import java.util.List;
 

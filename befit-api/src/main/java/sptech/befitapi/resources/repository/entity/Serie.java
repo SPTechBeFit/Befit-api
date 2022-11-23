@@ -36,4 +36,5 @@ public class Serie {
 
     public Serie() {
     }
+
 }
