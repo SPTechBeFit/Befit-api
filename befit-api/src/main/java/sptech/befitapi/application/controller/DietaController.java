@@ -62,13 +62,13 @@ public class DietaController {
         return (dietas != null) ? ResponseEntity.status(HttpStatus.OK).body(dietas) : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @PostMapping(value = "/importar/dieta/{personId}", consumes = "text/*")
+    @PostMapping(value = "/importar/{personId}", consumes = "text/*")
     public ResponseEntity<String> lerArquivoTxt(@PathVariable String personId, @RequestBody byte[] dieta) throws UnsupportedEncodingException {
         dietaService.agendarExecucao(personId, dieta);
         return ResponseEntity.ok().body("Arquivo lido / Dieta sera gerada em 10s");
     }
 
-    @GetMapping(value = "/exportar/dieta/{idDieta}", produces = "text/plain")
+    @GetMapping(value = "/exportar/{idDieta}", produces = "text/plain")
     public ResponseEntity<Object> getArquivtoTxt(@PathVariable int idDieta) {
         byte[] resultado = dietaService.gravarDietaTxt(idDieta);
         return ResponseEntity.status(HttpStatus.OK).header("content-disposition", "attachment; filename=\"dieta.txt\"").body(resultado);
