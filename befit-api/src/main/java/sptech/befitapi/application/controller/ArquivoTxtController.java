@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import sptech.befitapi.application.Util.ArquivoTxt;
 import sptech.befitapi.application.response.DietaCompleta;
 import sptech.befitapi.application.service.DietaService;
-import sptech.befitapi.resources.repository.UsuarioRepository;
-import sptech.befitapi.resources.repository.entity.Usuario;
+import sptech.befitapi.application.service.UsuarioService;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 @RestController
@@ -18,35 +19,32 @@ public class ArquivoTxtController {
 
     private final ArquivoTxt arquivoTxt;
     private final DietaService dietaService;
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     public ArquivoTxtController(final ArquivoTxt arquivoTxt,
                                 final DietaService dietaService,
-                                final UsuarioRepository usuarioRepository) {
+                                final UsuarioService usuarioService) {
 
         this.arquivoTxt = arquivoTxt;
         this.dietaService = dietaService;
-        this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
     }
 
-    @PostMapping("/importar/dieta/{personId}")
-    public ResponseEntity<String> lerArquivoTxt(@PathVariable String personId){
-       Usuario usuario =  usuarioRepository.findByPersonId(personId);
-       if (usuario == null){
-           return  ResponseEntity.status(404).body("Usuario não encontrado");
-       }
-        arquivoTxt.lerArquivoTxt("Dieta",personId);
+    @PostMapping(value = "/importar/dieta/{personId}", consumes = "text/*")
+    public ResponseEntity<String> lerArquivoTxt(@PathVariable String personId, @RequestBody byte[] dieta) throws UnsupportedEncodingException {
+        arquivoTxt.lerArquivoTxt(dieta,personId);
         return ResponseEntity.ok().body("Arquivo lido / Dieta gerada");
     }
 
-    @GetMapping("exportar/dieta/{idDieta}")
-    public ResponseEntity<Object> getArquivtoTxt(@PathVariable int idDieta) {
+    @GetMapping(value = "exportar/dieta/{idDieta}", produces = "text/plain")
+    public ResponseEntity<Object> getArquivtoTxt(@PathVariable int idDieta) throws UnsupportedEncodingException {
         Optional<DietaCompleta> dieta = dietaService.getById(idDieta);
         if (dieta.get().getIngredientes().size() <= 0 ){
             return ResponseEntity.status(204).body(dieta);
         }
-        arquivoTxt.agendarExecucao(dieta);
-        return ResponseEntity.status(HttpStatus.OK).body("Sua dieta será exportada 15S");
+
+       byte[] ok = arquivoTxt.gravarDietaTxt(dieta, idDieta);
+        return ResponseEntity.status(HttpStatus.OK).header("content-disposition", "attachment; filename=\"dieta-"+dieta.get().getDieta().get().getNome()+".txt\"").body(ok);
     }
 
 

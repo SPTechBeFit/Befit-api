@@ -1,13 +1,16 @@
 package sptech.befitapi.application.Util;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.application.request.DietaRequest;
 import sptech.befitapi.application.response.DietaCompleta;
 import sptech.befitapi.application.service.DietaService;
+import sptech.befitapi.application.service.ImagensPexelService;
+import sptech.befitapi.resources.repository.DietaRepository;
 import sptech.befitapi.resources.repository.IngredienteRepository;
 import sptech.befitapi.resources.repository.UsuarioRepository;
 import sptech.befitapi.resources.repository.entity.Dieta;
@@ -16,19 +19,27 @@ import sptech.befitapi.resources.repository.entity.IngredientesDieta;
 import sptech.befitapi.resources.repository.entity.Usuario;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@Component
-@EnableScheduling
+//@Component
+//@EnableScheduling
 public class ArquivoTxt {
 
     @Autowired
     DietaService dietaService;
+
+    @Autowired
+    DietaRepository dietaRepository;
+
+    @Autowired
+    private ImagensPexelService imagensPexelService;
 
     @Autowired
     UsuarioRepository usuarioRepository;
@@ -37,28 +48,6 @@ public class ArquivoTxt {
     IngredienteRepository ingredienteRepository;
 
     FilaObj<Optional<DietaCompleta>> filaObj = new FilaObj<>(20);
-
-    public static void gravaRegistro(String registro, String nomeArq){
-        BufferedWriter saida = null;
-
-        try {
-            saida = new BufferedWriter(new FileWriter(nomeArq, true));
-        }
-        catch (IOException erro){
-            System.out.println("Erro ao abrir o arquivo");
-            erro.printStackTrace();
-        }
-
-        try {
-            saida.append(registro + "\n");
-            saida.close();
-        }
-        catch (IOException erro){
-            System.out.println("Erro ao abrir o arquivo");
-            erro.printStackTrace();
-        }
-
-    }
 
     public String cabecalhoDietaTxt(){
         String corpo;
@@ -76,15 +65,18 @@ public class ArquivoTxt {
         return corpo;
     }
 
-    public void gravarDietaTxt(Optional<DietaCompleta> dietaCompleta){
+    public byte[] gravarDietaTxt(Optional<DietaCompleta> dietaCompleta, Integer idDieta) throws UnsupportedEncodingException {
+
         int contaRegDados = 0;
+        String arquivo = null;
 
         String header = "00DIETA";
         header += LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
         header += "01";
 
-        gravaRegistro(header, "Dieta");
-        gravaRegistro(cabecalhoDietaTxt(),"Dieta");
+        arquivo = header;
+
+        arquivo += "\n"+cabecalhoDietaTxt()+"";
 
         Optional<Dieta> dieta = dietaCompleta.get().getDieta();
         List<IngredientesDieta> ingredientes = dietaCompleta.get().getIngredientes();
@@ -105,33 +97,42 @@ public class ArquivoTxt {
             corpo += String.format("%06.2f", ingredientes.get(i).getIngrediente().getSodio());
             corpo += String.format("%08.2f", ingredientes.get(i).getIngrediente().getCaloria());
             corpo += String.format("%-11.11s", ingredientes.get(i).getQuantidade());
-            gravaRegistro(corpo, "Dieta");
+
+            arquivo += "\n"+corpo+"";
             contaRegDados++;
 
      }
         String trailer = "01";
         trailer += String.format("%010d", contaRegDados);
-        gravaRegistro(trailer, "Dieta");
+        arquivo += "\n"+trailer+"";
+
+        byte[] dietaTxt = arquivo.getBytes(StandardCharsets.UTF_8);
+         return dietaTxt;
     }
 
-    public void agendarExecucao(Optional<DietaCompleta> dietaCompleta){
-        filaObj.insert(dietaCompleta);
-    }
+    //public void agendarExecucao(Optional<DietaCompleta> dietaCompleta){
+    //   filaObj.insert(dietaCompleta);
+    //}
 
-    @Scheduled(fixedDelay = 15000)
-    public void rodarFilaAgendada(){
-            while (!filaObj.isEmpty()){
-                Optional<DietaCompleta> dietaCompleta = filaObj.poll();
-                this.gravarDietaTxt(dietaCompleta);
 
-            }
-    }
+    //@Scheduled(fixedDelay = 1000)
+    //public void rodarFilaAgendada(){
+    //        while (!filaObj.isEmpty()){
+    //            Optional<DietaCompleta> dietaCompleta = filaObj.poll();
+    //            this.gravarDietaTxt(dietaCompleta);
 
-    public void lerArquivoTxt(String nomeArq, String personId){
+    //        }
+    //}
+
+    public void lerArquivoTxt(byte[] dietaImportada, String personId) throws UnsupportedEncodingException {
 
         Usuario usuario = usuarioRepository.findByPersonId(personId);
+        if (usuario == null){
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário");
+        }
         BufferedReader entrada = null;
-        String registro, tipoRegistro;
+        String registro, tipoRegistro, ok;
         String nomeDieta = null , descricaoDieta = null, nomeIngrediente;
         int porcao;
         Double proteina, lipidio, carboidrato, sodio, caloria, quantidade;
@@ -141,18 +142,13 @@ public class ArquivoTxt {
         DietaRequest dietaRequest = new DietaRequest();
         List<DietaRequest> listaLida = new ArrayList<>();
         List<IngredientesDieta> ingredientesDietas = new ArrayList<>();
+        String dyteParaString = new String(dietaImportada, "UTF-8");
 
-        try {
-            entrada = new BufferedReader(new FileReader(nomeArq));
-        }
-        catch (IOException erro){
-            System.out.println("Erro ao ler o arquivo");
-            erro.printStackTrace();
-        }
+        entrada = new BufferedReader(new StringReader(dyteParaString));
 
         try{
             registro = entrada.readLine();
-
+            ok = registro;
             while (registro != null){
                 tipoRegistro = registro.substring(0,2);
                 if (tipoRegistro.equals("00")){
@@ -185,9 +181,11 @@ public class ArquivoTxt {
                     sodio = Double.valueOf(registro.substring(123,129).replace(',','.'));
                     caloria = Double.valueOf(registro.substring(129,137).replace(',','.'));
                     quantidade = Double.valueOf(registro.substring(137,140).replace(',','.'));
+                    String imagem = Objects.requireNonNull(imagensPexelService.getImagemPexel(nomeDieta).getBody()).getPhotos().get(0).getSrc().getMedium();
 
                     dieta.setNome(nomeDieta);
                     dieta.setDescricao(descricaoDieta);
+                    dieta.setImagem(imagem);
                     dieta.setCriador(usuario);
                     Ingrediente ingredienteSalvo = ingredienteRepository.save(new Ingrediente(nomeIngrediente,porcao,Double.valueOf(Math.round(proteina)),Double.valueOf(Math.round(lipidio)),Double.valueOf(Math.round(carboidrato)),Double.valueOf(Math.round(sodio)),Double.valueOf(Math.round(caloria))));
                     ingredientesDietas.add(new IngredientesDieta(dieta,ingredienteSalvo,quantidade));
