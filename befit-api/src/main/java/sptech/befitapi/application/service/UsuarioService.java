@@ -1,11 +1,9 @@
 package sptech.befitapi.application.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.resources.repository.UsuarioRepository;
-import sptech.befitapi.resources.repository.entity.*;
+import sptech.befitapi.resources.repository.entity.Usuario;
 
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class UsuarioService {
     public Usuario login(String email, String senha) {
             Usuario usuario = usuarioRepository.findUsuarioByEmailAndSenha(email, senha);
 
-            if(usuario == null || usuario.getLogado()) {
+            if(usuario == null) {
                 return null;
             }
 
@@ -42,7 +40,7 @@ public class UsuarioService {
     public Usuario logout(String personId) {
             Usuario usuario = usuarioRepository.findByPersonId(personId);
 
-            if(usuario == null || !usuario.getLogado()) {
+            if(usuario == null) {
                 return null;
             }
 
@@ -51,17 +49,5 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
 
             return usuario;
-    }
-
-    public Boolean validarLogin(String personId) {
-        Usuario usuario = usuarioRepository.findByPersonId(personId);
-
-        if (usuario == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
-            );
-        }
-
-        return usuario.getLogado();
     }
 }

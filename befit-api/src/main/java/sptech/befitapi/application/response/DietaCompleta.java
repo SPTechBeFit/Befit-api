@@ -8,11 +8,9 @@ import java.util.Optional;
 
 @Data
 public class DietaCompleta {
-    private Optional<Dieta> dieta;
     private List<IngredientesDieta> ingredientes;
 
-    public DietaCompleta(Optional<Dieta> dieta, List<IngredientesDieta> ingredientes) {
-        this.dieta = dieta;
+    public DietaCompleta(List<IngredientesDieta> ingredientes) {
         this.ingredientes = ingredientes;
     }
 }

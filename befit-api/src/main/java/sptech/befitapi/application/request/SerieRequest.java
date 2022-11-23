@@ -29,4 +29,7 @@ public class SerieRequest {
                 repeticao
         );
     }
+
+    public SerieRequest() {
+    }
 }

@@ -3,7 +3,7 @@ package sptech.befitapi.application.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sptech.befitapi.application.request.DietaRequest;
@@ -18,18 +18,19 @@ import sptech.befitapi.resources.repository.entity.Ingrediente;
 import sptech.befitapi.resources.repository.entity.IngredientesDieta;
 import sptech.befitapi.resources.repository.entity.Usuario;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
-//@Component
-//@EnableScheduling
+@EnableScheduling
 public class ArquivoTxt {
 
     @Autowired
@@ -47,7 +48,8 @@ public class ArquivoTxt {
     @Autowired
     IngredienteRepository ingredienteRepository;
 
-    FilaObj<Optional<DietaCompleta>> filaObj = new FilaObj<>(20);
+    FilaObj<byte[]> filaObj = new FilaObj<>(20);
+    FilaObj<String> filaPersonId = new FilaObj<>(20);
 
     public String cabecalhoDietaTxt(){
         String corpo;
@@ -55,17 +57,17 @@ public class ArquivoTxt {
         corpo += String.format("%-15.15s ", "Nome");
         corpo += String.format("%-40.40s", "Descricao");
         corpo += String.format("%-20.20s", "Ingrediente");
-        corpo += String.format("%-7.7s", "Porcao");
-        corpo += String.format("%-9.9s", "Proteina");
-        corpo += String.format("%-8.8s", "Lipidio");
-        corpo += String.format("%-20.20s", "Carboidrato");
-        corpo += String.format("%-6.6s", "Sodio");
-        corpo += String.format("%-8.8s", "Caloria");
-        corpo += String.format("%-11.11s", "Quantidade");
+        corpo += String.format("%7.7s", "Porcao");
+        corpo += String.format("%9.9s", "Proteina");
+        corpo += String.format("%8.8s", "Lipidio");
+        corpo += String.format("%12.12s", "Carboidrato");
+        corpo += String.format("%6.6s", "Sodio");
+        corpo += String.format("%8.8s", "Caloria");
+        corpo += String.format("%11.11s", "Quantidade");
         return corpo;
     }
 
-    public byte[] gravarDietaTxt(Optional<DietaCompleta> dietaCompleta, Integer idDieta) throws UnsupportedEncodingException {
+    public byte[] gravarDietaTxt(DietaCompleta dietaCompleta, Integer idDieta) throws UnsupportedEncodingException {
 
         int contaRegDados = 0;
         String arquivo = null;
@@ -78,8 +80,8 @@ public class ArquivoTxt {
 
         arquivo += "\n"+cabecalhoDietaTxt()+"";
 
-        Optional<Dieta> dieta = dietaCompleta.get().getDieta();
-        List<IngredientesDieta> ingredientes = dietaCompleta.get().getIngredientes();
+        Dieta dieta = dietaCompleta.getIngredientes().get(0).getDieta();
+        List<IngredientesDieta> ingredientes = dietaCompleta.getIngredientes();
 
 
         String corpo;
@@ -87,16 +89,16 @@ public class ArquivoTxt {
 
             corpo = "02 ";
             //corpo += String.format("%-5.5s", d.getIdExercicio());
-            corpo += String.format("%-15.15s ", dieta.get().getNome());
-            corpo += String.format("%-40.40s",  dieta.get().getDescricao());
+            corpo += String.format("%-15.15s ", dieta.getNome());
+            corpo += String.format("%-40.40s",  dieta.getDescricao());
             corpo += String.format("%-20.20s", ingredientes.get(i).getIngrediente().getNome());
-            corpo += String.format("%07d", ingredientes.get(i).getIngrediente().getPorcao());
-            corpo += String.format("%09.2f", ingredientes.get(i).getIngrediente().getProteina());
-            corpo += String.format("%08.2f", ingredientes.get(i).getIngrediente().getLipidio());
-            corpo += String.format("%020.2f", ingredientes.get(i).getIngrediente().getCarboidrato());
-            corpo += String.format("%06.2f", ingredientes.get(i).getIngrediente().getSodio());
-            corpo += String.format("%08.2f", ingredientes.get(i).getIngrediente().getCaloria());
-            corpo += String.format("%-11.11s", ingredientes.get(i).getQuantidade());
+            corpo += String.format("%7d", ingredientes.get(i).getIngrediente().getPorcao());
+            corpo += String.format("%9.2f", ingredientes.get(i).getIngrediente().getProteina());
+            corpo += String.format("%8.2f", ingredientes.get(i).getIngrediente().getLipidio());
+            corpo += String.format("%12.2f", ingredientes.get(i).getIngrediente().getCarboidrato());
+            corpo += String.format("%6.2f", ingredientes.get(i).getIngrediente().getSodio());
+            corpo += String.format("%8.2f", ingredientes.get(i).getIngrediente().getCaloria());
+            corpo += String.format("%11.11s", ingredientes.get(i).getQuantidade());
 
             arquivo += "\n"+corpo+"";
             contaRegDados++;
@@ -110,19 +112,20 @@ public class ArquivoTxt {
          return dietaTxt;
     }
 
-    //public void agendarExecucao(Optional<DietaCompleta> dietaCompleta){
-    //   filaObj.insert(dietaCompleta);
-    //}
+    public void agendarExecucao(String personId,byte[] arquivoLeitura){
+        filaPersonId.insert(personId);
+       filaObj.insert(arquivoLeitura);
+    }
 
 
-    //@Scheduled(fixedDelay = 1000)
-    //public void rodarFilaAgendada(){
-    //        while (!filaObj.isEmpty()){
-    //            Optional<DietaCompleta> dietaCompleta = filaObj.poll();
-    //            this.gravarDietaTxt(dietaCompleta);
-
-    //        }
-    //}
+    @Scheduled(fixedDelay = 15000, initialDelay = 15000)
+    public void rodarFilaAgendada() throws UnsupportedEncodingException {
+            while (!filaObj.isEmpty()){
+               byte[] dietaEmByte = filaObj.poll();
+               String personId = filaPersonId.poll();
+                this.lerArquivoTxt(dietaEmByte, personId);
+            }
+    }
 
     public void lerArquivoTxt(byte[] dietaImportada, String personId) throws UnsupportedEncodingException {
 
@@ -172,15 +175,15 @@ public class ArquivoTxt {
                 else if (tipoRegistro.equals("02")){
                     System.out.println("Registro corpo");
                     nomeDieta = registro.substring(3,19).trim();
-                    descricaoDieta = registro.substring(19,59);
-                    nomeIngrediente = registro.substring(59,79);
-                    porcao = Integer.parseInt(registro.substring(79, 86).replace(',', '.'));
-                    proteina = Double.parseDouble(registro.substring(86, 95).replace(',', '.'));
-                    lipidio = Double.valueOf(registro.substring(95,103).replace(',','.'));
-                    carboidrato = Double.valueOf(registro.substring(103,123).replace(',','.'));
-                    sodio = Double.valueOf(registro.substring(123,129).replace(',','.'));
-                    caloria = Double.valueOf(registro.substring(129,137).replace(',','.'));
-                    quantidade = Double.valueOf(registro.substring(137,140).replace(',','.'));
+                    descricaoDieta = registro.substring(19,59).trim();
+                    nomeIngrediente = registro.substring(59,79).trim();
+                    porcao = Integer.parseInt(registro.substring(79, 86).trim().replace(',', '.'));
+                    proteina = Double.parseDouble(registro.substring(86, 95).trim().replace(',', '.'));
+                    lipidio = Double.valueOf(registro.substring(95,103).trim().replace(',','.'));
+                    carboidrato = Double.valueOf(registro.substring(103,115).trim().replace(',','.'));
+                    sodio = Double.valueOf(registro.substring(115,121).trim().replace(',','.'));
+                    caloria = Double.valueOf(registro.substring(121,129).trim().replace(',','.'));
+                    quantidade = Double.valueOf(registro.substring(129,139).trim().replace(',','.'));
                     String imagem = Objects.requireNonNull(imagensPexelService.getImagemPexel(nomeDieta).getBody()).getPhotos().get(0).getSrc().getMedium();
 
                     dieta.setNome(nomeDieta);
