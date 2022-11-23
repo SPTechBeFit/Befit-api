@@ -103,6 +103,8 @@
 						<exclude>sptech/befitapi/application/service/ImagensPexelService.class</exclude>
 						<exclude>sptech/befitapi/resources/repository/entity/types/**</exclude>
 						<exclude>sptech/befitapi/BefitApiApplication.class</exclude>
+						<exclude>sptech/befitapi/application/Util/**</exclude>
+						<exclude>sptech/befitapi/application/domain/dto/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>

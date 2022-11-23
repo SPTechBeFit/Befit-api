@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sptech.befitapi.application.Util.ArquivoTxt;
 import sptech.befitapi.application.request.TreinoRequest;
 import sptech.befitapi.application.response.CatalogoTreinoResponse;
 import sptech.befitapi.application.response.TreinoDetalhado;
@@ -21,9 +20,6 @@ public class TreinoController {
 
     @Autowired
     private TreinoService treinoService;
-
-    @Autowired
-    private ArquivoTxt arquivoTxt;
 
     @PostMapping
     public ResponseEntity<Treino> post(@RequestBody TreinoRequest treino) {
