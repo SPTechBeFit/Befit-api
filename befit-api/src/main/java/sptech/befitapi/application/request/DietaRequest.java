@@ -11,4 +11,13 @@ public class DietaRequest {
     private Dieta dieta;
     private String personId;
     private List<IngredientesDieta> ingredientesDieta;
+
+    public DietaRequest() {
+    }
+
+    public DietaRequest(Dieta dieta, String personId, List<IngredientesDieta> ingredientesDieta) {
+        this.dieta = dieta;
+        this.personId = personId;
+        this.ingredientesDieta = ingredientesDieta;
+    }
 }

@@ -35,10 +35,10 @@ public class DietaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<DietaCompleta>> get(@PathVariable int id) {
-        Optional<DietaCompleta> dieta = dietaService.getById(id);
+    public ResponseEntity<DietaCompleta> get(@PathVariable int id) {
+        DietaCompleta dieta = dietaService.getById(id);
 
-        return (dieta.isPresent()) ? ResponseEntity.status(HttpStatus.OK).body(dieta) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return (dieta != null) ? ResponseEntity.status(HttpStatus.OK).body(dieta) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping("/favoritar/{personId}/{dietaId}")

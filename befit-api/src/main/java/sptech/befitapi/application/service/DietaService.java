@@ -35,9 +35,13 @@ public class DietaService {
     public Dieta cadastrar(@RequestBody DietaRequest dieta) {
         Usuario usuario = usuarioRepository.findByPersonId(dieta.getPersonId());
 
-        if (usuario != null) {
-            dieta.getDieta().setCriador(usuario);
+        if (usuario == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
+            );
         }
+
+        dieta.getDieta().setCriador(usuario);
 
         Dieta dietaDB = dietaRepository.save(dieta.getDieta());
 
@@ -52,7 +56,7 @@ public class DietaService {
     public List<CatalogoDietaResponse> getCatalogo(String personId) {
         List<Dieta> dietas = dietaRepository.findAll();
 
-        if (dietas == null || dietas.isEmpty()) {
+        if (dietas.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Não foi possível encontrar dietas"
             );
@@ -98,9 +102,14 @@ public class DietaService {
         return catalogo;
     }
 
-    public Optional<DietaCompleta> getById(int id) {
+    public DietaCompleta getById(int id) {
         List<IngredientesDieta> ingredientesDietas = ingredientesDietaRepository.findIngredientesDietaByDietaId(id);
-        Optional<Dieta> dieta = dietaRepository.findById(id);
+
+        if (ingredientesDietas.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Não foi possível encontrar os ingredientes da dieta"
+            );
+        }
 
         for (IngredientesDieta i : ingredientesDietas) {
             i.getIngrediente().setPorcao((int) (i.getIngrediente().getPorcao() * i.getQuantidade()));
@@ -111,49 +120,42 @@ public class DietaService {
             i.getIngrediente().setCaloria(i.getIngrediente().getCaloria() * i.getQuantidade());
         }
 
-        return Optional.of(new DietaCompleta(dieta, ingredientesDietas));
+        return new DietaCompleta(ingredientesDietas);
     }
 
     public Boolean favoritar(String personId, int dietaId) {
         Usuario usuario = usuarioRepository.findByPersonId(personId);
 
         if (usuario == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
-            );
-        }
-
-        try {
-            dietaFavoritaRepository.save(new DietaFavorita(new Usuario(usuario.getId()), new Dieta(dietaId)));
-            return true;
-        } catch (Exception e) {
             return false;
         }
+
+        boolean dietaExiste = dietaRepository.existsById(dietaId);
+
+        if (!dietaExiste) {
+            return false;
+        }
+
+        dietaFavoritaRepository.save(new DietaFavorita(new Usuario(usuario.getId()), new Dieta(dietaId)));
+        return true;
+
     }
 
     public Boolean deleteFavorito(String personId, int dietaId) {
         Usuario usuario = usuarioRepository.findByPersonId(personId);
 
         if (usuario == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Não foi possível encontrar o usuário"
-            );
+            return false;
         }
 
         DietaFavorita dietaFavorita = dietaFavoritaRepository.findDietaFavoritaByUsuarioIdAndDietaId(usuario.getId(), dietaId);
         if (dietaFavorita == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Não foi possível encontrar a dieta"
-            );
-        }
-
-
-        try {
-            dietaFavoritaRepository.deleteDietaFavoritaById(dietaFavorita.getId());
-            return true;
-        } catch (Exception e) {
             return false;
         }
+
+
+        dietaFavoritaRepository.deleteDietaFavoritaById(dietaFavorita.getId());
+        return true;
 
     }
 
@@ -168,7 +170,7 @@ public class DietaService {
         }
 
         List<DietaFavorita> dietas = dietaFavoritaRepository.findDietaByUsuarioId(usuario.getId());
-        if (dietas == null || dietas.isEmpty()) {
+        if (dietas.isEmpty()) {
             return null;
         }
         return new DietaFavoritaResponse().fromDietaFavoritaRepository(dietas);

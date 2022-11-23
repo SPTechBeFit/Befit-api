@@ -52,7 +52,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
+            <version>23.0.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -85,6 +85,40 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.5</version>
+				<configuration>
+					<excludes>
+						<exclude>sptech/befitapi/resources/repository/entity/**</exclude>
+						<exclude>sptech/befitapi/application/response/**</exclude>
+						<exclude>sptech/befitapi/application/domain/pexel/**</exclude>
+						<exclude>sptech/befitapi/application/request/**</exclude>
+						<exclude>sptech/befitapi/application/request/**</exclude>
+						<exclude>sptech/befitapi/application/controller/**</exclude>
+						<exclude>sptech/befitapi/application/listaObj/**</exclude>
+						<exclude>sptech/befitapi/application/service/ImagensPexelService.class</exclude>
+						<exclude>sptech/befitapi/resources/repository/entity/types/**</exclude>
+						<exclude>sptech/befitapi/BefitApiApplication.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

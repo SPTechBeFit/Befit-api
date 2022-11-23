@@ -52,8 +52,6 @@ public class TreinoService {
 
         Treino treinoDB = treinoRepository.save(treino.toTreinoRepository(imagem, usuario.getId()));
 
-        System.out.println(treino.getSeries());
-
         treino.getSeries().forEach(
                 serie -> serieRepository.save(serie.toSerieRepository(treinoDB.getId()))
         );
@@ -64,7 +62,7 @@ public class TreinoService {
     public List<CatalogoTreinoResponse> getCatalogo(String personId) {
         List<Treino> treinos = treinoRepository.findAll();
 
-        if (treinos == null || treinos.isEmpty()) {
+        if (treinos.isEmpty()) {
             return null;
         }
 
@@ -119,7 +117,7 @@ public class TreinoService {
         }
 
         List<TreinoFavorito> treinos = treinoFavoritoRepository.findTreinoByUsuarioId(usuario.getId());
-        if (treinos == null || treinos.isEmpty()) {
+        if (treinos.isEmpty()) {
             return null;
         }
         return new TreinoFavoritoResponse().fromTreinoFavoritoRepository(treinos);
@@ -152,21 +150,13 @@ public class TreinoService {
             return false;
         }
 
-
-
-        try {
             treinoFavoritoRepository.deleteTreinoFavoritoById(treinoFavorito.getId());
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 
     public List<TreinoDetalhado> getTreinoDetalhado(int id) {
         List<Serie> series = serieRepository.findByTreinoId(id);
-        if (series == null || series.isEmpty()) {
+        if (series.isEmpty()) {
             return null;
         }
         return new TreinoDetalhado().fromSerieRepository(series);

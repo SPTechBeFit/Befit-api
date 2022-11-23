@@ -8,9 +8,6 @@ import sptech.befitapi.application.request.ExercicioAtualizadoRequest;
 import sptech.befitapi.application.request.ExercicioRequest;
 import sptech.befitapi.resources.repository.ExercicioRepository;
 import sptech.befitapi.resources.repository.entity.Exercicio;
-import sptech.befitapi.resources.repository.entity.Treino;
-import sptech.befitapi.resources.repository.entity.TreinoFavorito;
-import sptech.befitapi.resources.repository.entity.Usuario;
 
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +30,7 @@ public class ExercicioService {
     public Boolean update(int id, ExercicioAtualizadoRequest imagem) {
         Optional<Exercicio> exericio = exercicioRepository.findById(id);
 
-        if (!exericio.isPresent()) {
+        if (exericio.isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "Não foi possível encontrar o exercicio"
             );

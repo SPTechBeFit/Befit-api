@@ -44,10 +44,4 @@ public class UsuarioController {
 
         return (usuario != null) ? ResponseEntity.status(HttpStatus.OK).body(usuario) : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
-    @GetMapping("/validar/{personId}")
-    public ResponseEntity<Boolean> validarLogin(@PathVariable String personId) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(usuarioService.validarLogin(personId));
-    }
 }
