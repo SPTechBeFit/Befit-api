@@ -65,7 +65,8 @@ public class TreinoController {
     public ResponseEntity<String> desfazerTreino() {
         Boolean ok = treinoService.desfazer();
         return (ok) ? ResponseEntity.status(HttpStatus.OK).body("O Treino foi deletado") :
-                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao desfazer as alterações");
+                ResponseEntity.status(HttpStatus.NO_CONTENT).body("Erro ao desfazer as alterações");
+
     }
 
 }

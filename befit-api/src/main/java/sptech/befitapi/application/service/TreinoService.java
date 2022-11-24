@@ -168,7 +168,6 @@ public class TreinoService {
         if (series.isEmpty()) {
             return null;
         }
-        var response = treinoRepository.findById(id);
         return new TreinoDetalhado().fromSerieRepository(series);
     }
 
@@ -180,7 +179,7 @@ public class TreinoService {
     public Boolean desfazer(){
       boolean desfeito = false;
         if (pilhaTreino.isEmpty() && pilhaSerie.isEmpty()){
-            throw new IllegalStateException();
+            return false;
         }else {
             for (Serie value : listSerie) {
                 pilhaSerie.push(value);

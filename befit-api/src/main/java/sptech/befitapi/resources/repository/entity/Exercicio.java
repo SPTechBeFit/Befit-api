@@ -12,6 +12,8 @@ public class Exercicio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nome;
+
+    @Column(length = 1500)
     private String descricao;
     private String imagem;
 
