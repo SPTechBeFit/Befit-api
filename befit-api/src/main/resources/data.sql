@@ -241,7 +241,7 @@ VALUES ('Supino reto',
         'https://conteudo.imguol.com.br/c/entretenimento/2f/2019/10/14/elevacao-lateral-1571066104977_v2_615x300.jpg'),
        ('Desenvolvimento sentado',
         'Sentado no banco com halteres na mao levante os halteres como se estivesse fazendo um supino com enfase no deltoide',
-        'https://www.google.com/url?sa=i&url=https%3A%2F%2Fmovimente.me%2Fexercicio%2Fdesenvolvimento-sentado-c-halteres%2F&psig=AOvVaw0zoX23nkMp-TLYTM7LJBkv&ust=1669414909614000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCLCjk6ftx_sCFQAAAAAdAAAAABAI');
+        'https://static.movimente.me/media/imgs/exercises/IMG_8464net_1.JPG');
 
 INSERT INTO treino (nome, descricao, imagem, criador_id)
 VALUES ('treino peito e triceps', 'treino para hipertrofia peito e triceps',
