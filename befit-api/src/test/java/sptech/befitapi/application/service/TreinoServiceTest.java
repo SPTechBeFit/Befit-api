@@ -326,4 +326,22 @@ class TreinoServiceTest {
 
         assertNull(resultado);
     }
+
+    @Test
+    void listaParaDesfazer_deveAdicionarNaListaSerieComSucesso() {
+        when(serieRepository.findByTreinoId(anyInt())).thenReturn(List.of(new Serie()));
+
+        service.listaParaDesfazer(new Treino(1));
+
+        verify(serieRepository, times(1)).findByTreinoId(anyInt());
+    }
+
+    @Test
+    void desfazer_deveDesfazerOsTreinosComSucesso() {
+        Boolean resultado = service.desfazer();
+
+        verify(serieRepository, times(1)).delete(any());
+        verify(treinoRepository, times(1)).delete(any());
+        assertEquals(true, resultado);
+    }
 }
