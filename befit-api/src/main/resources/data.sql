@@ -39,7 +39,7 @@ VALUES ('Batata doce', 100, 1.57, 0.05, 20.12, 55, 86.00),
 INSERT INTO dieta (nome, descricao, imagem, criador_id)
 VALUES ('Low Carb',
         'Reduz o consumo de carboidrato',
-        'https://s2.glbimg.com/wKCpFY5BeQFmpqLwAMUNafIuhoE=/0x0:724x483/984x0/smart/filters:strip_icc()/s.glbimg.com/es/ge/f/original/2019/07/04/dieta_low_carb.jpg',
+        'https://static.tuasaude.com/media/article/si/kl/alimentos-low-carb_54599_l.jpg',
         1),
        ('Ganho de Massa', 'Dieta que você ingere mais calorias do que gasta',
         'https://www.saboravida.com.br/wp-content/uploads/2021/09/4-alimentos-que-ajudam-a-ganhar-massa-muscular.jpg',
